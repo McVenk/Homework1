@@ -1,0 +1,254 @@
+
+
+Sub Assignment_easy_moderate_hard()
+
+    Call Assignment_Easy
+    Call Assignment_Moderate
+    Call Assignment_Hard
+
+End Sub
+Sub Assignment_Easy()
+
+    Dim xSh As Worksheet
+    Application.ScreenUpdating = False
+    For Each xSh In Worksheets
+        xSh.Select
+        Call Total_Volume
+        Call ticker
+    Next
+    Application.ScreenUpdating = True
+    
+       
+End Sub
+
+Sub Assignment_Moderate()
+
+    Dim xSh As Worksheet
+    Application.ScreenUpdating = False
+    For Each xSh In Worksheets
+        xSh.Select
+        Call yearly_changes
+    Next
+    Application.ScreenUpdating = True
+    
+    
+End Sub
+
+Sub Assignment_Hard()
+
+    Dim xSh As Worksheet
+    Application.ScreenUpdating = False
+    For Each xSh In Worksheets
+        xSh.Select
+        Call greatest_values
+    Next
+    Application.ScreenUpdating = True
+    Call greatest_values
+    
+End Sub
+
+
+
+
+Sub Total_Volume()
+
+    'Declare Header/Title for the total volume column
+         Cells(1, 10).Value = "Total Volume"
+            
+    'Declare total and running_total as double and setting them to 0
+        Dim running_total As Double
+        Dim total As Double
+        running_total = 0
+        total = 0
+    
+    'setting b as a variable for location of total for each ticker and assigning initial value
+        Dim b As Double
+        b = 2
+          
+    'Declare and compute last row of the sheet
+        Dim lrow As Double
+        lrow = Cells(Rows.Count, 1).End(xlUp).Row
+     
+    'Start the loops looking at all the rows to compute total volume per ticker
+    
+        For i = 2 To lrow
+     
+                total = Cells(i, 7).Value
+                running_total = running_total + total
+                             
+                'conditional for non equal tickers and direction to print and move to the next row/ticker for totals
+        
+                        If Cells(i, 1).Value <> Cells(i + 1, 1).Value Then
+                        
+                                Cells(b, 10).Value = running_total
+                                b = b + 1
+                                running_total = 0
+                                total = 0
+                                    
+                        End If
+        
+        Next i
+           
+       
+End Sub
+    
+Sub ticker()
+    
+    'Declare Header/Title for the total volume column
+         Cells(1, 9).Value = "Ticker"
+                      
+    'Declare and compute last row of the sheet
+        Dim lrow As Double
+        lrow = Cells(Rows.Count, 1).End(xlUp).Row
+    
+    'Declare ticker variable as a string
+        Dim ticker As String
+        
+    'Declare a and assign initial value for progress of j (printing ticker)
+        Dim a As Double
+        a = 2
+        
+        'starting loop for ticker location
+       
+            For i = 2 To lrow
+                
+                'conditional for non-equal tickers and printing ticker value and moving on
+                
+                        If Cells(i, 1).Value <> Cells(i + 1, 1).Value Then
+                                    
+                            ticker = Cells(i, 1).Value
+                            Cells(a, 9).Value = ticker
+                            a = a + 1
+                                
+                        End If
+              
+            Next i
+                  
+End Sub
+
+Sub yearly_changes()
+
+    'Insert Column J&K for computing yearly change and percentage change columns
+        Columns("J:J").Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+        Columns("K:K").Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+        Cells(1, 10).Value = "Yearly Change"
+        Cells(1, 11).Value = "Percentage Change"
+        
+    'Declare and compute last row of the sheet
+        Dim lrow As Double
+        lrow = Cells(Rows.Count, 1).End(xlUp).Row
+        
+    'Declare variables to calculate yearly and percentage change
+        Dim open_price As Double
+        Dim close_price As Double
+        Dim yearly_change As Double
+        Dim percentage_change As Double
+        
+    'Declare variable c for locating, printing and progressing variable values
+        Dim c As Double
+        c = 2
+    
+    'Initializing open price for the first ticker
+        open_price = Cells(2, 3).Value
+    
+        'Start the loop for determining variables for each ticker
+            
+            For i = 2 To lrow
+                              
+                     
+                'Setting if condition to determine all variables and locate them in various columns
+                
+                    If Cells(i, 1).Value <> Cells(i + 1, 1).Value Then
+                    
+                        'Compute close price for first ticker
+                            close_price = Cells(i, 6).Value
+                        
+                        'Compute yearly_change
+                            yearly_change = close_price - open_price
+                        
+                        'Compute percentage change; if change=0, then percentage change is 0
+                            If open_price = 0 Then
+                                
+                                percentage_change = 0
+                                
+                            Else:
+                                percentage_change = (yearly_change / open_price) * 100
+                            
+                            End If
+                            
+                            
+                        'locating the variables and formatting percentage change to %
+                            Cells(c, 10).Value = yearly_change
+                            Cells(c, 11).Value = percentage_change * 100
+                            Cells(c, 11).NumberFormat = "0.00\%"
+                            
+                                'conditional formatting for yearly change variable
+                                    If Cells(c, 10).Value >= 0 Then
+                                        Cells(c, 10).Interior.Color = vbGreen
+                                    Else:
+                                        Cells(c, 10).Interior.Color = vbRed
+                                    End If
+                        'Determining the open price for the next ticker and progressing the variable locations
+                            open_price = Cells(i + 1, 3).Value
+                            c = c + 1
+                        
+                    End If
+                               
+                    
+            Next i
+                    
+        
+End Sub
+                            
+Sub greatest_values()
+
+    'Declare headers/titles for greatest values column and their corresponding ticker column
+        Cells(1, 16).Value = "Ticker"
+        Cells(1, 17).Value = "Value"
+        Cells(2, 15).Value = "Greatest % Increase"
+        Cells(3, 15).Value = "Greatest % Decrease"
+        Cells(4, 15).Value = "Greatest Total Volume"
+        
+    'Declare variables for greatest values
+        Dim greatest_increase As Double
+        Dim greatest_decrease As Double
+        Dim greatest_volume As Double
+    
+    'Declare and compute last row of the percentage change and volume columns
+        Dim lrow As Double
+        lrow = Cells(Rows.Count, 9).End(xlUp).Row
+    
+    'Computing  and locating greatest % increase and formating as a percentage
+        greatest_increase = Application.WorksheetFunction.Max(Range("k:k"))
+        Cells(2, 17).Value = greatest_increase
+        Cells(2, 17).NumberFormat = "0.00\%"
+    
+    'Computing  and locating greatest % decrease and formating as a percentage
+        greatest_decrease = Application.WorksheetFunction.Min(Range("k:k"))
+        Cells(3, 17).Value = greatest_decrease
+        Cells(3, 17).NumberFormat = "0.00\%"
+        
+    'Computing  and locating greatest total volume and formating as a percentage
+        greatest_volume = Application.WorksheetFunction.Max(Range("l:l"))
+        Cells(4, 17).Value = greatest_volume
+        
+    'Computing ticker value for corresponding greatest values
+        
+        For i = 2 To lrow
+        
+            If Cells(i, 11).Value = greatest_increase Then
+                Cells(2, 16).Value = Cells(i, 9).Value
+            ElseIf Cells(i, 11).Value = greatest_decrease Then
+                Cells(3, 16).Value = Cells(i, 9).Value
+            ElseIf Cells(i, 12).Value = greatest_volume Then
+                Cells(4, 16).Value = Cells(i, 9).Value
+            End If
+            
+        Next i
+    
+
+End Sub
+
+
+
+
